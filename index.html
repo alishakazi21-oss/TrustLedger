@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TrustLedger — Digital Trust & Blockchain Property Transaction Platform. Verify the Person. Verify the Property. Secure the Transaction." />
+  <title>TrustLedger — Institutional Digital Trust & Property Platform</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/views.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Persistent Left Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <a class="brand-logo" onclick="window.Router.navigate('landing')">
+          <div class="logo-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="brand-title">Trust<span>Ledger</span></div>
+        </a>
+        <span class="sidebar-badge">V2.1</span>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Overview</div>
+        <a class="nav-item active" data-route="dashboard" onclick="window.Router.navigate('dashboard')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <span>Dashboard</span>
+        </a>
+
+        <div class="nav-section-title">Core Workflow</div>
+        <a class="nav-item" data-route="onboarding" onclick="window.Router.navigate('onboarding')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span>Digital Identity (DID)</span>
+          <span class="nav-badge" style="background: var(--verified-emerald-dim); color: var(--verified-emerald);">e-KYC</span>
+        </a>
+
+        <a class="nav-item" data-route="verify-doc" onclick="window.Router.navigate('verify-doc')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <span>Document Verification</span>
+          <span class="nav-badge">OCR</span>
+        </a>
+
+        <a class="nav-item" data-route="property" onclick="window.Router.navigate('property')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <span>Property Cadastre</span>
+        </a>
+
+        <a class="nav-item" data-route="transaction" onclick="window.Router.navigate('transaction')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <span>Smart Escrow</span>
+          <span class="nav-badge alert">Active</span>
+        </a>
+
+        <div class="nav-section-title">Institutional Portals</div>
+        <a class="nav-item" data-route="verifier-app" onclick="window.Router.navigate('verifier-app')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+          <span>Verifier App</span>
+        </a>
+
+        <a class="nav-item" data-route="registrar-web" onclick="window.Router.navigate('registrar-web')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <span>Registrar Review</span>
+          <span class="nav-badge" style="background: rgba(245, 158, 11, 0.2); color: var(--warning-amber);">2</span>
+        </a>
+
+        <a class="nav-item" data-route="admin-console" onclick="window.Router.navigate('admin-console')">
+          <div class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          </div>
+          <span>Admin &amp; Security</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer with Persona Selector & Node Pulse -->
+      <div class="sidebar-footer">
+        <div class="persona-selector-wrap">
+          <label class="persona-label">Perspective / Persona</label>
+          <select class="persona-select" id="sidebar-persona-select">
+            <option value="buyer">Alexander (Buyer)</option>
+            <option value="seller">Helena (Seller)</option>
+            <option value="verifier">Barclays (Verifier)</option>
+            <option value="registrar">Eleanor (Registrar)</option>
+            <option value="admin">SecOps (Admin)</option>
+          </select>
+        </div>
+
+        <div class="network-status-widget">
+          <div class="pulse-dot"></div>
+          <div>
+            <strong style="color: var(--text-primary);">Cadastre Subnet:</strong> 18 Nodes Synced
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Topbar Header -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobile-toggle-btn" aria-label="Toggle menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+
+        <div class="topbar-breadcrumb">
+          <span>TrustLedger</span>
+          <span>/</span>
+          <span class="current" id="current-breadcrumb-title">Command Hub</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Live API Connectivity Indicator -->
+        <div class="header-trust-pill" id="topbar-api-pill" style="cursor: pointer;" onclick="AppState.checkBackendHealth(true)" title="Click to test live backend connection">
+          <span class="pulse-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--verified-emerald); margin-right:4px;"></span>
+          <span id="api-status-text">Backend: Connecting...</span>
+        </div>
+
+        <!-- Trust Badge -->
+        <div class="header-trust-pill" id="topbar-trust-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Tier 3 (Institutional)</span>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="user-profile-widget" onclick="window.Router.navigate('onboarding')">
+          <div class="user-avatar" id="topbar-user-avatar">AS</div>
+          <div class="user-info">
+            <div class="user-name" id="topbar-user-name">Alexander Sterling</div>
+            <div class="user-role-badge" id="topbar-user-role">Verified Buyer</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main id="main-content">
+      <div id="view-container"></div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/icons.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/views/landing.js"></script>
+  <script src="js/views/onboarding.js"></script>
+  <script src="js/views/dashboard.js"></script>
+  <script src="js/views/docVerification.js"></script>
+  <script src="js/views/propertyRegistry.js"></script>
+  <script src="js/views/transactionEscrow.js"></script>
+  <script src="js/views/verifierApp.js"></script>
+  <script src="js/views/registrarWeb.js"></script>
+  <script src="js/views/adminConsole.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

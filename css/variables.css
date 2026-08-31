@@ -1,0 +1,88 @@
+:root {
+  /* Core Color Palette - TrustLedger Institutional Slate */
+  --bg-main: #031427;
+  --bg-surface: #0b1c30;
+  --bg-surface-elevated: #102034;
+  --bg-surface-high: #1b2b3f;
+  --bg-surface-highest: #26364a;
+  
+  --bg-card-glass: rgba(16, 32, 52, 0.75);
+  --bg-card-glass-hover: rgba(27, 43, 63, 0.85);
+  --bg-glass-modal: rgba(11, 28, 48, 0.95);
+  --glass-border: rgba(148, 163, 184, 0.15);
+  --glass-border-focus: rgba(16, 185, 129, 0.5);
+
+  /* Brand Accents */
+  --primary: #bec6e0;
+  --primary-bright: #dae2fd;
+  --primary-dim: #798098;
+  --primary-navy: #0f172a;
+  
+  /* Trust & Verified Accents */
+  --verified-emerald: #10b981;
+  --verified-emerald-dim: rgba(16, 185, 129, 0.12);
+  --verified-emerald-glow: rgba(16, 185, 129, 0.35);
+  --verified-teal: #06b6d4;
+  --verified-teal-dim: rgba(6, 182, 212, 0.12);
+
+  /* Status Colors */
+  --warning-amber: #f59e0b;
+  --warning-amber-dim: rgba(245, 158, 11, 0.12);
+  --critical-red: #ef4444;
+  --critical-red-dim: rgba(239, 68, 68, 0.12);
+  --info-blue: #38bdf8;
+  --info-blue-dim: rgba(56, 189, 248, 0.12);
+
+  /* Typography Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #031427;
+
+  /* Typography Font Families & Scales */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+  --font-xs: 0.75rem;    /* 12px */
+  --font-sm: 0.875rem;   /* 14px */
+  --font-base: 1rem;     /* 16px */
+  --font-lg: 1.125rem;   /* 18px */
+  --font-xl: 1.25rem;    /* 20px */
+  --font-2xl: 1.5rem;    /* 24px */
+  --font-3xl: 2rem;      /* 32px */
+  --font-4xl: 2.5rem;    /* 40px */
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+  --shadow-emerald: 0 0 20px rgba(16, 185, 129, 0.25);
+  --shadow-red: 0 0 20px rgba(239, 68, 68, 0.25);
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 72px;
+  --topbar-height: 68px;
+  --container-max-width: 1400px;
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}

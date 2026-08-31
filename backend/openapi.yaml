@@ -1,0 +1,669 @@
+openapi: 3.0.3
+info:
+  title: TrustLedger API
+  version: 1.0.0
+  description: |
+    Blockchain-based digital trust & property transaction platform.
+    Verify the Person. Verify the Property. Secure the Transaction.
+  contact:
+    name: TrustLedger Team
+    email: admin@trustledger.network
+
+servers:
+  - url: http://localhost:4000
+    description: Local development
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        error: { type: string }
+
+    UserRole:
+      type: string
+      enum: [individual, issuer, verifier, registrar, admin]
+
+    KycStatus:
+      type: string
+      enum: [pending, verified, rejected]
+
+    TransactionStatus:
+      type: string
+      enum: [Offered, EscrowFunded, Verifying, ContractExecuted, TitleTransferred, Cancelled, Refunded]
+
+    VerificationStatus:
+      type: string
+      enum: [pending, verified, failed, revoked]
+
+    PropertyVersionStatus:
+      type: string
+      enum: [Original, Superseded, Corrected]
+
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string }
+        fullName: { type: string }
+        role: { $ref: '#/components/schemas/UserRole' }
+        did: { type: string, nullable: true }
+        kycStatus: { $ref: '#/components/schemas/KycStatus' }
+        kycTier: { type: string }
+        smartAccountAddress: { type: string, nullable: true }
+        reputationScore: { type: number }
+        isActive: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    PropertyVersion:
+      type: object
+      properties:
+        propertyId: { type: string }
+        versionNumber: { type: integer }
+        status: { $ref: '#/components/schemas/PropertyVersionStatus' }
+        previousVersionId: { type: string, nullable: true }
+        ownerId: { type: string }
+        title: { type: string }
+        address: { type: string }
+        parcelId: { type: string }
+        deedHash: { type: string }
+        riskScore: { type: number, minimum: 0, maximum: 100 }
+        riskStatus: { type: string, enum: [Low, Medium, High] }
+        riskDetails: { type: string }
+        onChainTxHash: { type: string, nullable: true }
+        amendmentReason: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+    Document:
+      type: object
+      properties:
+        id: { type: string }
+        sha256Hash: { type: string }
+        ocrStatus: { type: string, enum: [pending, completed, failed] }
+        registryMatchStatus: { type: string, enum: [match, mismatch, pending] }
+        verificationStatus: { $ref: '#/components/schemas/VerificationStatus' }
+        isRevoked: { type: boolean }
+        urlScanResults:
+          type: object
+          properties:
+            urlsFound: { type: array, items: { type: string } }
+            safeUrls: { type: array, items: { type: string } }
+            unsafeUrls: { type: array, items: { type: string } }
+            verdict: { type: string, enum: [safe, unsafe, pending] }
+        createdAt: { type: string, format: date-time }
+
+    Transaction:
+      type: object
+      properties:
+        txId: { type: string }
+        propertyId: { type: string }
+        buyerId: { type: string }
+        sellerId: { type: string }
+        priceUsd: { type: number }
+        escrowAmountUsd: { type: number }
+        status: { $ref: '#/components/schemas/TransactionStatus' }
+        buyerApproved: { type: boolean }
+        sellerApproved: { type: boolean }
+        registrarApproved: { type: boolean }
+        onChainTxHash: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+    AuditLog:
+      type: object
+      properties:
+        actor: { type: string }
+        actorEmail: { type: string }
+        actorRole: { $ref: '#/components/schemas/UserRole' }
+        action: { type: string }
+        entityType: { type: string }
+        entityId: { type: string }
+        details: { type: object }
+        onChainTxHash: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+
+paths:
+  # ── Health ──────────────────────────────────────────────────────────────────
+  /health:
+    get:
+      summary: Health check
+      security: []
+      tags: [System]
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  service: { type: string }
+                  version: { type: string }
+                  timestamp: { type: string }
+
+  # ── Auth ────────────────────────────────────────────────────────────────────
+  /auth/register:
+    post:
+      summary: Register a new user
+      security: []
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, fullName]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                fullName: { type: string }
+                role: { $ref: '#/components/schemas/UserRole' }
+      responses:
+        '201':
+          description: User registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  token: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+        '409':
+          description: Email already registered
+
+  /auth/login:
+    post:
+      summary: Login
+      security: []
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: JWT token returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  token: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+        '401':
+          description: Invalid credentials
+
+  /auth/me:
+    get:
+      summary: Get current authenticated user
+      tags: [Auth]
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  user: { $ref: '#/components/schemas/User' }
+
+  # ── Identity ─────────────────────────────────────────────────────────────────
+  /identity/onboard:
+    post:
+      summary: Onboard identity — generate DID & issue Verifiable Credential
+      tags: [Identity]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fullName, dob, nationalId, country]
+              properties:
+                fullName: { type: string }
+                dob: { type: string, format: date, example: '1990-03-15' }
+                nationalId: { type: string }
+                country: { type: string }
+                address: { type: string }
+                idType: { type: string, example: 'National ID' }
+      responses:
+        '201':
+          description: DID + Verifiable Credential issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  did: { type: string }
+                  eoa: { type: string }
+                  smartAccountAddress: { type: string }
+                  kycTier: { type: string }
+                  verifiableCredential: { type: object }
+                  didDocument: { type: object }
+
+  /identity/{did}:
+    get:
+      summary: Resolve DID — fetch identity + credential status
+      security: []
+      tags: [Identity]
+      parameters:
+        - name: did
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: DID resolved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  did: { type: string }
+                  status: { $ref: '#/components/schemas/KycStatus' }
+                  kycTier: { type: string }
+                  verifiableCredential: { type: object }
+                  didDocument: { type: object }
+                  smartAccountAddress: { type: string }
+                  reputationScore: { type: number }
+        '404':
+          description: DID not found
+
+  # ── Documents ─────────────────────────────────────────────────────────────────
+  /documents/upload:
+    post:
+      summary: Upload a document for verification (OCR + hash + registry check + URL scan)
+      tags: [Documents]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                propertyId: { type: string }
+                documentType: { type: string, example: 'Title Deed' }
+      responses:
+        '201':
+          description: Document uploaded and verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  document: { $ref: '#/components/schemas/Document' }
+
+  /documents/{id}:
+    get:
+      summary: Get document verification status
+      tags: [Documents]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Document status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  document: { $ref: '#/components/schemas/Document' }
+
+  /documents/{id}/revoke:
+    post:
+      summary: Revoke a document / credential
+      tags: [Documents]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string }
+      responses:
+        '200':
+          description: Document revoked
+
+  # ── Properties ───────────────────────────────────────────────────────────────
+  /properties:
+    get:
+      summary: List all properties (latest version of each)
+      security: []
+      tags: [Properties]
+      responses:
+        '200':
+          description: Property list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  total: { type: integer }
+                  properties:
+                    type: array
+                    items: { $ref: '#/components/schemas/PropertyVersion' }
+    post:
+      summary: Register a new property
+      tags: [Properties]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, address, parcelId, deedData]
+              properties:
+                title: { type: string }
+                address: { type: string }
+                parcelId: { type: string }
+                zoning: { type: string }
+                sqFt: { type: string }
+                cadastralCoordinates: { type: string }
+                boundaryGeoJson: { type: object }
+                deedData: { type: object }
+      responses:
+        '201':
+          description: Property registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  propertyId: { type: string }
+                  version: { $ref: '#/components/schemas/PropertyVersion' }
+
+  /properties/{propertyId}:
+    get:
+      summary: Get current (latest) version of a property
+      security: []
+      tags: [Properties]
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Current property version
+
+  /properties/{propertyId}/history:
+    get:
+      summary: Get full ownership/amendment version chain
+      security: []
+      tags: [Properties]
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: All property versions ordered by version number
+
+  /properties/{propertyId}/amend:
+    post:
+      summary: Create a corrected version of a property record
+      tags: [Properties]
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amendmentReason]
+              properties:
+                amendmentReason: { type: string }
+                title: { type: string }
+                address: { type: string }
+                zoning: { type: string }
+                sqFt: { type: string }
+                deedData: { type: object }
+      responses:
+        '201':
+          description: New corrected version created
+
+  # ── Transactions ─────────────────────────────────────────────────────────────
+  /transactions:
+    post:
+      summary: Create a new property transaction (Offered state)
+      tags: [Transactions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [propertyId, sellerId, priceUsd]
+              properties:
+                propertyId: { type: string }
+                sellerId: { type: string }
+                priceUsd: { type: number }
+      responses:
+        '201':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  transaction: { $ref: '#/components/schemas/Transaction' }
+    get:
+      summary: List all transactions for the current user
+      tags: [Transactions]
+      responses:
+        '200':
+          description: Transaction list
+
+  /transactions/{id}:
+    get:
+      summary: Get a specific transaction
+      tags: [Transactions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Transaction details
+
+  /transactions/{id}/fund:
+    post:
+      summary: Fund the escrow (buyer action → EscrowFunded)
+      tags: [Transactions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Escrow funded, on-chain deal created
+
+  /transactions/{id}/approve:
+    post:
+      summary: Approve transaction (seller / registrar / admin)
+      tags: [Transactions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Approval recorded; if all parties approve, title is transferred on-chain
+
+  /transactions/{id}/cancel:
+    post:
+      summary: Cancel / refund a transaction
+      tags: [Transactions]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string }
+      responses:
+        '200':
+          description: Transaction cancelled (and refunded if escrow was funded)
+
+  # ── Bundler ──────────────────────────────────────────────────────────────────
+  /bundler/status:
+    get:
+      summary: ERC-4337 bundler / relayer status
+      security: []
+      tags: [Bundler]
+      responses:
+        '200':
+          description: Bundler online status and relayer balance
+
+  /bundler/submit:
+    post:
+      summary: Submit a signed ERC-4337 UserOperation to the EntryPoint
+      security: []
+      tags: [Bundler]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sender, nonce, initCode, callData, callGasLimit, verificationGasLimit, preVerificationGas, maxFeePerGas, maxPriorityFeePerGas, paymasterAndData, signature]
+              properties:
+                sender: { type: string }
+                nonce: { type: string }
+                initCode: { type: string }
+                callData: { type: string }
+                callGasLimit: { type: string }
+                verificationGasLimit: { type: string }
+                preVerificationGas: { type: string }
+                maxFeePerGas: { type: string }
+                maxPriorityFeePerGas: { type: string }
+                paymasterAndData: { type: string }
+                signature: { type: string }
+      responses:
+        '200':
+          description: UserOperation submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  userOpHash: { type: string }
+                  txHash: { type: string }
+                  blockNumber: { type: integer }
+
+  # ── Admin ─────────────────────────────────────────────────────────────────────
+  /admin/stats:
+    get:
+      summary: Platform dashboard statistics (admin only)
+      tags: [Admin]
+      responses:
+        '200':
+          description: Aggregated platform stats
+
+  /admin/audit-logs:
+    get:
+      summary: Query audit log entries
+      tags: [Admin]
+      parameters:
+        - name: entityType
+          in: query
+          schema: { type: string }
+        - name: action
+          in: query
+          schema: { type: string }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 50, maximum: 200 }
+      responses:
+        '200':
+          description: Paginated audit log entries
+
+  /admin/users:
+    get:
+      summary: List all users (admin only)
+      tags: [Admin]
+      parameters:
+        - name: role
+          in: query
+          schema: { $ref: '#/components/schemas/UserRole' }
+        - name: kycStatus
+          in: query
+          schema: { $ref: '#/components/schemas/KycStatus' }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: User list
+
+  /admin/users/{userId}/deactivate:
+    post:
+      summary: Deactivate a user account
+      tags: [Admin]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: User deactivated
